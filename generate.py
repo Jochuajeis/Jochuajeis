@@ -1,8 +1,8 @@
 import requests, json, random, time, socket, platform
 
 timestr = time.strftime("%Y-%m-%d - %H:%M:%S UTC")
-nameid = "Saugehxat"
-repoid = "Saugehxat"
+nameid = "Jochuajeis"
+repoid = "Jochuajeis"
 yamlid = "build_and_release"
 f = open("./README.md", "w")
 f.write(f'''
