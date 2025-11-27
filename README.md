@@ -14,7 +14,7 @@
 
 ```bash
 
-2025-11-27 - 19:13:54 UTC
+2025-11-27 - 20:17:50 UTC
 
 ```
 
@@ -26,7 +26,7 @@ Host Name : runnervmg1sw1
 
 platform  : Linux-6.11.0-1018-azure-x86_64-with-glibc2.39
 
-Ip Local  : 10.1.0.75
+Ip Local  : 10.1.0.238
 
 ```
 
